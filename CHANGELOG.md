@@ -8,3 +8,4 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ### Added
 - Project scaffold: `pyproject.toml`, ruff config, MIT license, package skeleton.
+- GitHub Actions CI running ruff (lint + format) and pytest on Python 3.12.
