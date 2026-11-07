@@ -32,6 +32,7 @@ packages = ["src/cricket_scorer"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+filterwarnings = ["error"]
 
 [tool.ruff]
 line-length = 100

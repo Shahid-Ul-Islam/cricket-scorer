@@ -20,6 +20,8 @@ and the project uses [Semantic Versioning](https://semver.org/).
   hit wicket, retired hurt (may resume) and retired out; rules for which dismissals are
   possible off each extra and on a free hit; fall of wickets; all-out ends the innings.
 - Undo of the last event by replaying the rest of the innings.
+- SQLAlchemy models (Team, Player, Match, Innings, Over, Ball) and SQLite session helpers;
+  database URL configurable via `CRICKET_SCORER_DATABASE_URL`.
 
 ### Removed
 - Local `.claude/settings.local.json` from version control.
