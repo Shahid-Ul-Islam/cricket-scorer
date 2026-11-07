@@ -33,6 +33,8 @@ and the project uses [Semantic Versioning](https://semver.org/).
 - Live HTMX scoring page: pick striker/non-striker/bowler, buttons for 0/1/2/3/4/6,
   wides, no-balls, byes, leg-byes, wicket/retirement form, undo and end-innings; shows
   score, run rate, target, required rate, partnership, free hit and this-over summary.
+- Scorecard page per match: batting card with dismissal text, extras breakdown, totals,
+  fall of wickets and bowling card (O, M, R, W, economy, wides, no-balls).
 
 ### Removed
 - Local `.claude/settings.local.json` from version control.

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Scorecard · {{ card.title }}{% endblock %}
+{% block content %}
+<p>
+  <a href="/matches">← Matches</a>
+  {% if card.status.value == "in_progress" %} · <a href="/matches/{{ card.match_id }}/score">Live scoring</a>{% endif %}
+</p>
+<h1>{{ card.title }}</h1>
+<p class="muted">
+  {{ card.date }}{% if card.venue %} · {{ card.venue }}{% endif %} · {{ card.overs_per_side }} overs per side
+  {% if card.toss %}<br>{{ card.toss }}{% endif %}
+</p>
+{% if card.result %}<p><strong>{{ card.result }}</strong></p>
+{% elif card.status.value == "in_progress" %}<p class="notice">In progress</p>{% endif %}
+
+{% for inn in card.innings %}
+<section class="card">
+  <h2>{{ inn.batting_team }} - {{ inn.total }} ({{ inn.overs }} ov){% if inn.target %} <span class="muted">target {{ inn.target }}</span>{% endif %}</h2>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Batter</th><th></th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr></thead>
+    <tbody>
+    {% for b in inn.batting %}
+      <tr>
+        <td><a href="/players/{{ b.player_id }}">{{ b.name }}</a></td>
+        <td class="how">{{ b.how_out }}</td>
+        <td><strong>{{ b.runs }}</strong></td><td>{{ b.balls }}</td><td>{{ b.fours }}</td><td>{{ b.sixes }}</td><td>{{ b.strike_rate|rate }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="7" class="muted">No balls bowled yet.</td></tr>
+    {% endfor %}
+      <tr><td>Extras</td><td class="how">{{ inn.extras_detail }}</td><td><strong>{{ inn.total_extras }}</strong></td><td colspan="4"></td></tr>
+      <tr><td><strong>Total</strong></td><td class="how">{{ inn.wickets }} wkts, {{ inn.overs }} ov, RR {{ inn.run_rate|rate }}</td><td><strong>{{ inn.runs }}</strong></td><td colspan="4"></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  {% if inn.fall_of_wickets %}
+  <p><strong>Fall of wickets:</strong>
+    {% for f in inn.fall_of_wickets %}{{ f.number }}-{{ f.runs }} ({{ f.name }}, {{ f.overs }} ov){% if not loop.last %}, {% endif %}{% endfor %}
+  </p>
+  {% endif %}
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Bowler ({{ inn.bowling_team }})</th><th>O</th><th>M</th><th>R</th><th>W</th><th>Econ</th><th>Wd</th><th>NB</th></tr></thead>
+    <tbody>
+    {% for bw in inn.bowling %}
+      <tr>
+        <td><a href="/players/{{ bw.player_id }}">{{ bw.name }}</a></td>
+        <td>{{ bw.overs }}</td><td>{{ bw.maidens }}</td><td>{{ bw.runs }}</td><td><strong>{{ bw.wickets }}</strong></td>
+        <td>{{ bw.economy|rate }}</td><td>{{ bw.wides }}</td><td>{{ bw.no_balls }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+{% else %}
+<p class="muted">The match has not started.</p>
+{% endfor %}
+{% endblock %}

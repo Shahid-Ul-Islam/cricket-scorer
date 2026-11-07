@@ -10,6 +10,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
 from cricket_scorer.models import MatchStatus, TossDecision
 from cricket_scorer.services import ServiceError, matches, teams
+from cricket_scorer.services.scorecard import build_scorecard
 from cricket_scorer.web.deps import SessionDep, templates
 
 router = APIRouter(prefix="/matches", tags=["matches"])
@@ -94,6 +95,12 @@ def match_detail(request: Request, session: SessionDep, match_id: int) -> Respon
             return RedirectResponse(f"/matches/{match_id}/score", status_code=303)
         case _:
             return RedirectResponse(f"/matches/{match_id}/scorecard", status_code=303)
+
+
+@router.get("/{match_id}/scorecard", response_class=HTMLResponse)
+def scorecard(request: Request, session: SessionDep, match_id: int) -> Response:
+    card = build_scorecard(matches.get_match(session, match_id))
+    return templates.TemplateResponse(request, "scorecard.html", {"card": card})
 
 
 @router.post("/{match_id}/toss")
