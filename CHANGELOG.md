@@ -6,6 +6,10 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-07
+
+First release.
+
 ### Added
 - Project scaffold: `pyproject.toml`, ruff config, MIT license, package skeleton.
 - GitHub Actions CI running ruff (lint + format) and pytest on Python 3.12.
@@ -46,5 +50,5 @@ and the project uses [Semantic Versioning](https://semver.org/).
 - README CI badge and clone URL point at the `Shahid-Ul-Islam/cricket-scorer` repository.
 - README screenshots of the live scoring page and the scorecard.
 
-### Removed
-- Local `.claude/settings.local.json` from version control.
+[Unreleased]: https://github.com/Shahid-Ul-Islam/cricket-scorer/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Shahid-Ul-Islam/cricket-scorer/releases/tag/v0.1.0
