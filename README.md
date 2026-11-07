@@ -36,11 +36,13 @@ and a scoring page designed for a phone at the boundary.
 
 ## Screenshots
 
-> _Placeholder: add screenshots to `docs/screenshots/` and link them here._
+**Live scoring:** scoreboard, this over, batters and bowler, and the scoring buttons.
 
-| Live scoring | Scorecard | Player stats |
-|---|---|---|
-| _coming soon_ | _coming soon_ | _coming soon_ |
+![Live scoring page showing the score, run rate, partnership, this-over balls and the striker, non-striker and bowler pickers](docs/screenshots/live-scoring.png)
+
+**Scorecard:** batting card with dismissals, extras, total, fall of wickets and the bowling card.
+
+![Match scorecard showing the batting card, extras, total, fall of wickets and bowling figures](docs/screenshots/scorecard.png)
 
 ## Quick start
 

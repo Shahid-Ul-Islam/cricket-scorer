@@ -44,6 +44,7 @@ and the project uses [Semantic Versioning](https://semver.org/).
 - README with features, quick start, architecture, endpoints, known limitations,
   screenshots placeholder and roadmap (DLS, tournaments, charts).
 - README CI badge and clone URL point at the `Shahid-Ul-Islam/cricket-scorer` repository.
+- README screenshots of the live scoring page and the scorecard.
 
 ### Removed
 - Local `.claude/settings.local.json` from version control.
