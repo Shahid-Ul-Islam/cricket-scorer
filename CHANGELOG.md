@@ -11,3 +11,9 @@ and the project uses [Semantic Versioning](https://semver.org/).
 - GitHub Actions CI running ruff (lint + format) and pytest on Python 3.12.
 - Engine domain types: `BallEvent`, `ExtraType`, `DismissalType` (incl. retired hurt/out),
   `InningsConfig`.
+- Innings replay engine: run accounting, strike rotation on odd runs and at end of over,
+  maidens, bowler rules (no consecutive overs, optional per-bowler cap), run rate,
+  required rate, partnership, this-over summary, innings end on overs or target.
+
+### Removed
+- Local `.claude/settings.local.json` from version control.
