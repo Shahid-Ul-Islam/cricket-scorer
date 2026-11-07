@@ -10,7 +10,7 @@ from cricket_scorer import __version__
 from cricket_scorer.db import init_db, make_engine, make_session_factory
 from cricket_scorer.services import NotFoundError
 from cricket_scorer.web.deps import WEB_DIR, templates
-from cricket_scorer.web.routes import matches, scoring, teams
+from cricket_scorer.web.routes import matches, players, scoring, teams
 
 
 def create_app(database_url: str | None = None) -> FastAPI:
@@ -23,6 +23,7 @@ def create_app(database_url: str | None = None) -> FastAPI:
     app.include_router(teams.router)
     app.include_router(matches.router)
     app.include_router(scoring.router)
+    app.include_router(players.router)
 
     @app.get("/", include_in_schema=False)
     def index() -> RedirectResponse:

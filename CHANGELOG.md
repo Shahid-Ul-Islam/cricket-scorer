@@ -35,6 +35,9 @@ and the project uses [Semantic Versioning](https://semver.org/).
   score, run rate, target, required rate, partnership, free hit and this-over summary.
 - Scorecard page per match: batting card with dismissal text, extras breakdown, totals,
   fall of wickets and bowling card (O, M, R, W, economy, wides, no-balls).
+- Player stats from completed matches: career batting (innings, not outs, runs, highest,
+  average, strike rate, 50s/100s) and bowling (overs, wickets, best figures, average,
+  economy), with a players leaderboard and innings-by-innings detail.
 
 ### Removed
 - Local `.claude/settings.local.json` from version control.

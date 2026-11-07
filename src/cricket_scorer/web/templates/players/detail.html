@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ s.player.name }} · cricket-scorer{% endblock %}
+{% block content %}
+<p><a href="/players">← Players</a></p>
+<h1>{{ s.player.name }}</h1>
+<p class="muted"><a href="/teams/{{ s.player.team.id }}">{{ s.player.team.name }}</a> · {{ s.matches }} completed match{{ "es" if s.matches != 1 else "" }}</p>
+
+{% set bat = s.batting %}
+<section class="card">
+  <h2>Batting</h2>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Inns</th><th>NO</th><th>Runs</th><th>Balls</th><th>HS</th><th>Avg</th><th>SR</th><th>50s</th><th>100s</th></tr></thead>
+    <tbody><tr>
+      <td>{{ bat.count }}</td><td>{{ bat.not_outs }}</td><td>{{ bat.runs }}</td><td>{{ bat.balls }}</td>
+      <td>{{ bat.highest or "-" }}</td><td>{{ bat.average|rate }}</td><td>{{ bat.strike_rate|rate }}</td>
+      <td>{{ bat.fifties }}</td><td>{{ bat.hundreds }}</td>
+    </tr></tbody>
+  </table>
+  </div>
+  {% if bat.innings %}
+  <details>
+    <summary>Innings by innings</summary>
+    <table>
+      <thead><tr><th>Match</th><th>Date</th><th>Runs</th><th>Balls</th></tr></thead>
+      <tbody>
+      {% for i in bat.innings|reverse %}
+        <tr><td><a href="/matches/{{ i.match_id }}/scorecard">{{ i.match_title }}</a></td><td>{{ i.date }}</td><td>{{ i.runs }}{% if not i.out %}*{% endif %}</td><td>{{ i.balls }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </details>
+  {% endif %}
+</section>
+
+{% set bowl = s.bowling %}
+<section class="card">
+  <h2>Bowling</h2>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Inns</th><th>Overs</th><th>Runs</th><th>Wkts</th><th>Best</th><th>Avg</th><th>Econ</th></tr></thead>
+    <tbody><tr>
+      <td>{{ bowl.count }}</td><td>{{ bowl.overs }}</td><td>{{ bowl.runs }}</td><td>{{ bowl.wickets }}</td>
+      <td>{{ bowl.best or "-" }}</td><td>{{ bowl.average|rate }}</td><td>{{ bowl.economy|rate }}</td>
+    </tr></tbody>
+  </table>
+  </div>
+  {% if bowl.innings %}
+  <details>
+    <summary>Innings by innings</summary>
+    <table>
+      <thead><tr><th>Match</th><th>Date</th><th>Overs</th><th>Figures</th></tr></thead>
+      <tbody>
+      {% for i in bowl.innings|reverse %}
+        <tr><td><a href="/matches/{{ i.match_id }}/scorecard">{{ i.match_title }}</a></td><td>{{ i.date }}</td><td>{{ i.balls|overs }}</td><td>{{ i.figures }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </details>
+  {% endif %}
+</section>
+{% endblock %}

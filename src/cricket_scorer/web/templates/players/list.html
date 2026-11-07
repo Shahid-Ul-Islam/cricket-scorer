@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Players · cricket-scorer{% endblock %}
+{% block content %}
+<h1>Players</h1>
+<p class="muted">Career figures from completed matches.</p>
+{% if rows %}
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>Player</th><th>Team</th><th>M</th>
+      <th>Runs</th><th>Avg</th><th>SR</th><th>HS</th>
+      <th>Wkts</th><th>Econ</th><th>Best</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for s in rows %}
+    <tr>
+      <td><a href="/players/{{ s.player.id }}">{{ s.player.name }}</a></td>
+      <td class="how">{{ s.player.team.name }}</td>
+      <td>{{ s.matches }}</td>
+      <td>{{ s.batting.runs }}</td><td>{{ s.batting.average|rate }}</td><td>{{ s.batting.strike_rate|rate }}</td><td>{{ s.batting.highest or "-" }}</td>
+      <td>{{ s.bowling.wickets }}</td><td>{{ s.bowling.economy|rate }}</td><td>{{ s.bowling.best or "-" }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<p class="muted">No players yet. <a href="/teams">Add a team</a>.</p>
+{% endif %}
+{% endblock %}
