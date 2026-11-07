@@ -43,6 +43,7 @@ and the project uses [Semantic Versioning](https://semver.org/).
 - Route tests for exports and an end-to-end match played through the web UI.
 - README with features, quick start, architecture, endpoints, known limitations,
   screenshots placeholder and roadmap (DLS, tournaments, charts).
+- README CI badge and clone URL point at the `Shahid-Ul-Islam/cricket-scorer` repository.
 
 ### Removed
 - Local `.claude/settings.local.json` from version control.

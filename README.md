@@ -1,6 +1,6 @@
 # cricket-scorer
 
-[![CI](https://github.com/OWNER/cricket-scorer/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/cricket-scorer/actions/workflows/ci.yml)
+[![CI](https://github.com/Shahid-Ul-Islam/cricket-scorer/actions/workflows/ci.yml/badge.svg)](https://github.com/Shahid-Ul-Islam/cricket-scorer/actions/workflows/ci.yml)
 
 Ball-by-ball cricket scoring and statistics for amateur clubs playing limited-overs matches.
 Server-rendered with FastAPI, Jinja2 and HTMX: no JavaScript build step, one SQLite file,
@@ -47,7 +47,7 @@ and a scoring page designed for a phone at the boundary.
 Requires Python 3.12+.
 
 ```bash
-git clone https://github.com/OWNER/cricket-scorer.git
+git clone https://github.com/Shahid-Ul-Islam/cricket-scorer.git
 cd cricket-scorer
 python -m venv .venv
 # Windows: .venv\Scripts\activate    macOS/Linux: source .venv/bin/activate
