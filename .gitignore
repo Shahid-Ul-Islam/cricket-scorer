@@ -20,6 +20,9 @@ htmlcov/
 *.sqlite3
 .env
 
+# Local Claude Code settings
+.claude/settings.local.json
+
 # Editors / OS
 .vscode/
 .idea/
