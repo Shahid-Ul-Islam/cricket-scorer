@@ -18,7 +18,7 @@ from cricket_scorer.models import (
     Over,
     TossDecision,
 )
-from cricket_scorer.services import ServiceError
+from cricket_scorer.services import NotFoundError, ServiceError
 from cricket_scorer.services.teams import get_team
 
 
@@ -29,7 +29,7 @@ def list_matches(session: Session) -> list[Match]:
 def get_match(session: Session, match_id: int) -> Match:
     match = session.get(Match, match_id)
     if match is None:
-        raise ServiceError(f"match {match_id} not found")
+        raise NotFoundError(f"match {match_id} not found")
     return match
 
 

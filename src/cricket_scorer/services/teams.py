@@ -6,7 +6,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from cricket_scorer.models import Player, Team
-from cricket_scorer.services import ServiceError
+from cricket_scorer.services import NotFoundError, ServiceError
 
 
 def _clean_name(name: str) -> str:
@@ -25,7 +25,7 @@ def list_teams(session: Session) -> list[Team]:
 def get_team(session: Session, team_id: int) -> Team:
     team = session.get(Team, team_id)
     if team is None:
-        raise ServiceError(f"team {team_id} not found")
+        raise NotFoundError(f"team {team_id} not found")
     return team
 
 
@@ -54,7 +54,7 @@ def add_player(session: Session, team_id: int, name: str) -> Player:
 def get_player(session: Session, player_id: int) -> Player:
     player = session.get(Player, player_id)
     if player is None:
-        raise ServiceError(f"player {player_id} not found")
+        raise NotFoundError(f"player {player_id} not found")
     return player
 
 

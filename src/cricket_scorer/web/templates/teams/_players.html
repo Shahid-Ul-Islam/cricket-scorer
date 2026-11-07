@@ -1,0 +1,13 @@
+<section id="players">
+  {% if error %}<p class="error">{{ error }}</p>{% endif %}
+  <h2>Players ({{ team.players|length }})</h2>
+  {% if team.players %}
+  <ul class="list">
+    {% for player in team.players %}
+    <li><a href="/players/{{ player.id }}">{{ player.name }}</a></li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="muted">No players yet.</p>
+  {% endif %}
+</section>

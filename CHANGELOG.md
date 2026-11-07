@@ -25,6 +25,9 @@ and the project uses [Semantic Versioning](https://semver.org/).
 - Services for teams/players and the match lifecycle: create match, toss, record ball
   (team checks + engine validation), automatic second innings, result (by runs, by
   wickets, tie), close innings early, and undo across innings and completed matches.
+- Web app factory with Jinja2 layout, vendored htmx 2.0.4, light/dark stylesheet, team
+  and player pages (HTMX add-player), 404 page, and `cricket-scorer` / `python -m
+  cricket_scorer` entry point.
 
 ### Removed
 - Local `.claude/settings.local.json` from version control.

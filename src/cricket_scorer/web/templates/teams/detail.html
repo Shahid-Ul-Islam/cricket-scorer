@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ team.name }} · cricket-scorer{% endblock %}
+{% block content %}
+<p><a href="/teams">← Teams</a></p>
+<h1>{{ team.name }}</h1>
+
+<h2>Add a player</h2>
+<form method="post" action="/teams/{{ team.id }}/players" class="inline-form"
+      hx-post="/teams/{{ team.id }}/players" hx-target="#players" hx-swap="outerHTML"
+      hx-on::after-request="if (event.detail.successful) this.reset()">
+  <input name="name" placeholder="Player name" required maxlength="100" aria-label="Player name">
+  <button type="submit">Add player</button>
+</form>
+
+{% include "teams/_players.html" %}
+{% endblock %}

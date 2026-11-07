@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Teams · cricket-scorer{% endblock %}
+{% block content %}
+<h1>Teams</h1>
+{% if teams %}
+<ul class="list">
+  {% for team in teams %}
+  <li><a href="/teams/{{ team.id }}">{{ team.name }}</a> <span class="muted">{{ team.players|length }} players</span></li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="muted">No teams yet.</p>
+{% endif %}
+
+<h2>Add a team</h2>
+<form method="post" action="/teams" class="inline-form">
+  <input name="name" placeholder="Team name" required maxlength="100" aria-label="Team name">
+  <button type="submit">Add team</button>
+</form>
+{% if error %}<p class="error">{{ error }}</p>{% endif %}
+{% endblock %}
