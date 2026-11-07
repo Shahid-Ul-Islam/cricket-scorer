@@ -22,6 +22,9 @@ and the project uses [Semantic Versioning](https://semver.org/).
 - Undo of the last event by replaying the rest of the innings.
 - SQLAlchemy models (Team, Player, Match, Innings, Over, Ball) and SQLite session helpers;
   database URL configurable via `CRICKET_SCORER_DATABASE_URL`.
+- Services for teams/players and the match lifecycle: create match, toss, record ball
+  (team checks + engine validation), automatic second innings, result (by runs, by
+  wickets, tie), close innings early, and undo across innings and completed matches.
 
 ### Removed
 - Local `.claude/settings.local.json` from version control.
