@@ -251,6 +251,20 @@ class Innings:
         """End the innings early (e.g. no fit batters left)."""
         self.closed = True
 
+    def undo(self) -> BallEvent:
+        """Remove the last event and rebuild the state by replaying the rest.
+
+        Undoing also reopens an innings that was closed early.
+        """
+        if not self._events:
+            raise IllegalEventError("nothing to undo")
+        remaining, last = self._events[:-1], self._events[-1]
+        self._events = []
+        self._reset()
+        for event in remaining:
+            self.record(event)
+        return last
+
     # ------------------------------------------------------------- validation
 
     def _validate(self, e: BallEvent) -> None:

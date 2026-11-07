@@ -19,6 +19,7 @@ and the project uses [Semantic Versioning](https://semver.org/).
 - Dismissals: bowled, caught, lbw, run out (either batter, with runs completed), stumped,
   hit wicket, retired hurt (may resume) and retired out; rules for which dismissals are
   possible off each extra and on a free hit; fall of wickets; all-out ends the innings.
+- Undo of the last event by replaying the rest of the innings.
 
 ### Removed
 - Local `.claude/settings.local.json` from version control.
