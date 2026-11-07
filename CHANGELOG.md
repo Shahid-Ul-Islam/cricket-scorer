@@ -41,6 +41,8 @@ and the project uses [Semantic Versioning](https://semver.org/).
 - Exports: full match as JSON (`/matches/{id}/export.json`, schema version 1, every ball)
   and scorecard as Markdown (`/matches/{id}/scorecard.md`), linked from the scorecard.
 - Route tests for exports and an end-to-end match played through the web UI.
+- README with features, quick start, architecture, endpoints, known limitations,
+  screenshots placeholder and roadmap (DLS, tournaments, charts).
 
 ### Removed
 - Local `.claude/settings.local.json` from version control.
