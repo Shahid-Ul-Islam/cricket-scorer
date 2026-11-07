@@ -118,6 +118,7 @@ is tested in isolation.
 pytest                 # engine, service and route tests
 ruff check .           # lint
 ruff format .          # format
+python scripts/make_screenshots.py   # regenerate README screenshots (needs Chrome or Edge)
 ```
 
 CI (GitHub Actions) runs `ruff check`, `ruff format --check` and `pytest` on every push and

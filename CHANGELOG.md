@@ -6,6 +6,10 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- `scripts/make_screenshots.py`: regenerates the README screenshots from a fictional
+  sample match using headless Chrome, Chromium or Edge.
+
 ## [0.1.0] - 2026-11-07
 
 First release.
