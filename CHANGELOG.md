@@ -28,6 +28,8 @@ and the project uses [Semantic Versioning](https://semver.org/).
 - Web app factory with Jinja2 layout, vendored htmx 2.0.4, light/dark stylesheet, team
   and player pages (HTMX add-player), 404 page, and `cricket-scorer` / `python -m
   cricket_scorer` entry point.
+- Match list (scores, live/result status), new-match form (overs, players per side,
+  optional bowler cap, date, venue) and toss page.
 
 ### Removed
 - Local `.claude/settings.local.json` from version control.

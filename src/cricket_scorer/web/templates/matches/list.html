@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Matches · cricket-scorer{% endblock %}
+{% block content %}
+<div class="inline-form" style="justify-content: space-between">
+  <h1>Matches</h1>
+  <a class="button" href="/matches/new">New match</a>
+</div>
+{% if rows %}
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>Match</th><th>Date</th><th>Scores</th><th>Status</th><th></th></tr>
+  </thead>
+  <tbody>
+  {% for match, innings in rows %}
+    <tr>
+      <td><a href="/matches/{{ match.id }}">{{ match.title }}</a>{% if match.venue %}<br><span class="muted">{{ match.venue }}</span>{% endif %}</td>
+      <td>{{ match.date.isoformat() }}</td>
+      <td>
+        {% for view in innings %}
+          {{ view.innings.batting_team.name }} {{ view.state.runs }}/{{ view.state.wickets }} ({{ view.state.overs }}){% if not loop.last %}<br>{% endif %}
+        {% else %}<span class="muted">-</span>{% endfor %}
+      </td>
+      <td>
+        {% if match.status.value == "completed" %}{{ match.result }}
+        {% elif match.status.value == "in_progress" %}<span class="notice">Live</span>
+        {% else %}<span class="muted">Scheduled</span>{% endif %}
+      </td>
+      <td>
+        {% if match.status.value != "scheduled" %}<a href="/matches/{{ match.id }}/scorecard">Scorecard</a>{% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<p class="muted">No matches yet. <a href="/teams">Add teams</a>, then create a match.</p>
+{% endif %}
+{% endblock %}

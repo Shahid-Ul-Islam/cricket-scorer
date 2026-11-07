@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}New match · cricket-scorer{% endblock %}
+{% block content %}
+<p><a href="/matches">← Matches</a></p>
+<h1>New match</h1>
+{% if teams|length < 2 %}
+<p class="notice">You need at least two teams. <a href="/teams">Add teams</a> first.</p>
+{% else %}
+<form method="post" action="/matches" class="card">
+  <div class="form-grid">
+    <label>Home team
+      <select name="home_team_id" required>
+        {% for t in teams %}<option value="{{ t.id }}" {% if form.home_team_id == t.id %}selected{% endif %}>{{ t.name }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Away team
+      <select name="away_team_id" required>
+        {% for t in teams %}<option value="{{ t.id }}" {% if form.away_team_id == t.id or (not form and loop.index == 2) %}selected{% endif %}>{{ t.name }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Date
+      <input type="date" name="date" value="{{ form.date or today }}">
+    </label>
+    <label>Venue (optional)
+      <input name="venue" maxlength="100" value="{{ form.venue or '' }}">
+    </label>
+    <label>Overs per side
+      <input type="number" name="overs_per_side" min="1" max="100" required value="{{ form.overs_per_side or 20 }}">
+    </label>
+    <label>Players per side
+      <input type="number" name="players_per_side" min="2" max="11" required value="{{ form.players_per_side or 11 }}">
+    </label>
+    <label>Max overs per bowler (optional)
+      <input type="number" name="max_overs_per_bowler" min="1" value="{{ form.max_overs_per_bowler or '' }}">
+    </label>
+  </div>
+  <p><button type="submit">Create match</button></p>
+  {% if error %}<p class="error">{{ error }}</p>{% endif %}
+</form>
+{% endif %}
+{% endblock %}

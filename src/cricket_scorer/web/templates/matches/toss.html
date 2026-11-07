@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ match.title }} · toss{% endblock %}
+{% block content %}
+<p><a href="/matches">← Matches</a></p>
+<h1>{{ match.title }}</h1>
+<p class="muted">{{ match.date.isoformat() }}{% if match.venue %} · {{ match.venue }}{% endif %} · {{ match.overs_per_side }} overs, {{ match.players_per_side }}-a-side</p>
+
+<form method="post" action="/matches/{{ match.id }}/toss" class="card">
+  <h2>Toss</h2>
+  <div class="form-grid">
+    <label>Won by
+      <select name="winner_id">
+        <option value="{{ match.home_team.id }}">{{ match.home_team.name }}</option>
+        <option value="{{ match.away_team.id }}">{{ match.away_team.name }}</option>
+      </select>
+    </label>
+    <label>Elected to
+      <select name="decision">
+        <option value="bat">bat</option>
+        <option value="bowl">bowl</option>
+      </select>
+    </label>
+  </div>
+  <p><button type="submit">Start match</button></p>
+  {% if error %}<p class="error">{{ error }}</p>{% endif %}
+</form>
+{% for team in (match.home_team, match.away_team) %}
+  {% if team.players|length < match.players_per_side %}
+  <p class="notice">{{ team.name }} has {{ team.players|length }} players listed; <a href="/teams/{{ team.id }}">add players</a> before scoring.</p>
+  {% endif %}
+{% endfor %}
+{% endblock %}
