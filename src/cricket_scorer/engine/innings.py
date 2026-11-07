@@ -20,6 +20,8 @@ from cricket_scorer.engine.types import (
     format_overs,
 )
 
+MAX_RUNS_PER_BALL = 7  # e.g. three run plus four overthrows
+
 
 @dataclass(slots=True)
 class BatterStats:
@@ -239,10 +241,16 @@ class Innings:
     def _validate(self, e: BallEvent) -> None:
         if self.is_complete:
             raise IllegalEventError("innings is complete")
-        if e.runs < 0:
-            raise IllegalEventError("runs cannot be negative")
+        self._validate_runs(e)
         self._validate_batters(e)
         self._validate_bowler(e)
+
+    @staticmethod
+    def _validate_runs(e: BallEvent) -> None:
+        if not 0 <= e.runs <= MAX_RUNS_PER_BALL:
+            raise IllegalEventError(f"runs must be between 0 and {MAX_RUNS_PER_BALL}")
+        if e.extra in (ExtraType.BYE, ExtraType.LEG_BYE) and e.runs == 0:
+            raise IllegalEventError("byes and leg-byes need at least one run")
 
     def _validate_batters(self, e: BallEvent) -> None:
         if e.striker == e.non_striker:
@@ -299,7 +307,16 @@ class Innings:
                 self.bowlers[e.bowler].maidens += 1
             self._swap_strike()
 
+        self._update_free_hit(e)
         self.applied.append(AppliedEvent(e, over_index, self.runs, self.wickets, was_free_hit))
+
+    def _update_free_hit(self, e: BallEvent) -> None:
+        """The delivery after a no-ball is a free hit.  If that delivery is itself
+        a wide or no-ball, the free hit carries over to the next one."""
+        if e.extra is ExtraType.NO_BALL:
+            self.free_hit = True
+        elif e.extra is not ExtraType.WIDE:
+            self.free_hit = False
 
     def _score_delivery(self, e: BallEvent) -> None:
         self.runs += e.total_runs
