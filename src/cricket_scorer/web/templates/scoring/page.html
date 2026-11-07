@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Scoring · {{ v.match.title }}{% endblock %}
+{% block content %}
+<p><a href="/matches">← Matches</a> · <a href="/matches/{{ v.match.id }}/scorecard">Scorecard</a></p>
+<h1>{{ v.match.title }}</h1>
+{% include "scoring/_panel.html" %}
+{% endblock %}

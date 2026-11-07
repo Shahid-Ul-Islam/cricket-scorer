@@ -1,0 +1,168 @@
+{% set s = v.state %}
+{% set mid = v.match.id %}
+<section id="scoring">
+  {% if v.error %}<p class="error" role="alert">{{ v.error }}</p>{% endif %}
+
+  {% if not s %}
+  <div class="card">
+    <h2>Match finished</h2>
+    <p><strong>{{ v.match.result }}</strong></p>
+    <p><a class="button" href="/matches/{{ mid }}/scorecard">View scorecard</a></p>
+    <form method="post" action="/matches/{{ mid }}/undo" hx-post="/matches/{{ mid }}/undo" hx-target="#scoring" hx-swap="outerHTML">
+      <button type="submit" class="secondary">↶ Undo last ball</button>
+    </form>
+  </div>
+  {% else %}
+
+  {% if v.first_innings %}
+  <p class="muted">
+    {{ v.match.innings[0].batting_team.name }} scored {{ v.first_innings.runs }}/{{ v.first_innings.wickets }}
+    ({{ v.first_innings.overs }} ov).
+    {% if not s.events %}<strong class="notice">Innings break: {{ v.innings.batting_team.name }} need {{ s.config.target }} to win.</strong>{% endif %}
+  </p>
+  {% endif %}
+
+  <div class="card">
+    <div class="scoreboard">
+      <span>{{ v.innings.batting_team.name }}</span>
+      <span class="score">{{ s.runs }}/{{ s.wickets }}</span>
+      <span class="overs">{{ s.overs }} / {{ v.match.overs_per_side }} ov</span>
+      {% if s.free_hit %}<span class="free-hit">FREE HIT</span>{% endif %}
+    </div>
+    <div class="stats">
+      <span>Run rate <b>{{ s.run_rate|rate }}</b></span>
+      {% if s.config.target %}
+      <span>Target <b>{{ s.config.target }}</b></span>
+      <span>Need <b>{{ s.runs_required }}</b> off <b>{{ s.balls_remaining }}</b></span>
+      <span>Req. rate <b>{{ s.required_rate|rate }}</b></span>
+      {% endif %}
+      <span>Partnership <b>{{ s.partnership.runs }}</b> ({{ s.partnership.balls }})</span>
+      <span>Extras <b>{{ s.total_extras }}</b></span>
+    </div>
+    <div class="this-over" aria-label="This over">
+      <span class="muted">This over:</span>
+      {% for a in s.this_over %}
+        <span class="ball-chip{% if a.event.dismissal %} wicket{% elif a.event.bat_runs in (4, 6) %} boundary{% elif a.event.extra %} extra{% endif %}">{{ a.label }}</span>
+      {% else %}<span class="muted">-</span>{% endfor %}
+    </div>
+
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Batter</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr></thead>
+      <tbody>
+      {% for pid in (s.striker, s.non_striker) if pid %}
+        {% set b = s.batters[pid] %}
+        <tr>
+          <td>{{ v.names[pid] }}{% if pid == s.striker %} *{% endif %}</td>
+          <td>{{ b.runs }}</td><td>{{ b.balls }}</td><td>{{ b.fours }}</td><td>{{ b.sixes }}</td><td>{{ b.strike_rate|rate }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% set bid = s.current_bowler or s.previous_over_bowler %}
+    {% if bid and bid in s.bowlers %}
+    {% set bw = s.bowlers[bid] %}
+    <table>
+      <thead><tr><th>Bowler</th><th>O</th><th>M</th><th>R</th><th>W</th><th>Econ</th></tr></thead>
+      <tbody><tr>
+        <td>{{ v.names[bid] }}{% if not s.current_bowler %} <span class="muted">(last over)</span>{% endif %}</td>
+        <td>{{ bw.overs }}</td><td>{{ bw.maidens }}</td><td>{{ bw.runs }}</td><td>{{ bw.wickets }}</td><td>{{ bw.economy|rate }}</td>
+      </tr></tbody>
+    </table>
+    {% endif %}
+    </div>
+  </div>
+
+  <form id="ball-form" class="card" method="post" action="/matches/{{ mid }}/balls"
+        hx-post="/matches/{{ mid }}/balls" hx-target="#scoring" hx-swap="outerHTML">
+    <div class="form-grid">
+      {% for field, label, current in (("striker", "Striker", s.striker), ("non_striker", "Non-striker", s.non_striker)) %}
+      <label>{{ label }}
+        <select name="{{ field }}" required>
+          <option value="">- new batter -</option>
+          {% for p in v.striker_options %}
+          <option value="{{ p.id }}" {% if p.id == current %}selected{% endif %}>{{ p.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      {% endfor %}
+      <label>Bowler
+        <select name="bowler">
+          {% if s.current_bowler %}
+            <option value="{{ s.current_bowler }}" selected>{{ v.names[s.current_bowler] }}</option>
+          {% else %}
+            <option value="">- new over: choose bowler -</option>
+            {% for p in v.bowler_options %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}
+          {% endif %}
+        </select>
+      </label>
+    </div>
+
+    <h2>Runs</h2>
+    <div class="pad">
+      {% for r in run_buttons %}
+      <button type="submit" name="action" value="run:{{ r }}">{{ r }}</button>
+      {% endfor %}
+    </div>
+
+    <div class="extras-row">
+      {% for key, (label, values) in extra_buttons.items() %}
+      <fieldset>
+        <legend>{{ label }}</legend>
+        <div class="mini">
+          {% for n in values %}
+          <button type="submit" class="secondary" name="action" value="{{ key }}:{{ n }}">{% if key == "wide" %}{{ n + 1 }}wd{% elif key == "nb" %}nb{% if n %}+{{ n }}{% endif %}{% else %}{{ n }}{{ "b" if key == "bye" else "lb" }}{% endif %}</button>
+          {% endfor %}
+        </div>
+      </fieldset>
+      {% endfor %}
+    </div>
+
+    <details class="wicket-form">
+      <summary>Wicket / retirement</summary>
+      <div class="form-grid">
+        <label>How out
+          <select name="dismissal">
+            {% for d, label in dismissals.items() %}<option value="{{ d.value }}">{{ label }}</option>{% endfor %}
+          </select>
+        </label>
+        <label>Batter out
+          <select name="dismissed">
+            <option value="striker">Striker</option>
+            <option value="non_striker">Non-striker</option>
+          </select>
+        </label>
+        <label>Fielder / keeper (optional)
+          <select name="fielder">
+            <option value="">-</option>
+            {% for p in v.fielders %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}
+          </select>
+        </label>
+        <label>Runs completed (run out)
+          <input type="number" name="wicket_runs" min="0" max="7" value="0">
+        </label>
+        <label>Off a
+          <select name="wicket_extra">
+            <option value="">fair delivery</option>
+            <option value="wide">wide</option>
+            <option value="no_ball">no-ball</option>
+            <option value="bye">bye</option>
+            <option value="leg_bye">leg-bye</option>
+          </select>
+        </label>
+      </div>
+      <p><button type="submit" class="danger" name="action" value="wicket">Record wicket</button></p>
+    </details>
+  </form>
+
+  <div class="inline-form">
+    <form method="post" action="/matches/{{ mid }}/undo" hx-post="/matches/{{ mid }}/undo" hx-target="#scoring" hx-swap="outerHTML">
+      <button type="submit" class="secondary" {% if not s.events and v.innings.number == 1 %}disabled{% endif %}>↶ Undo last ball</button>
+    </form>
+    <form method="post" action="/matches/{{ mid }}/close" hx-post="/matches/{{ mid }}/close" hx-target="#scoring" hx-swap="outerHTML"
+          hx-confirm="End this innings now? Use this only if no more batters can bat.">
+      <button type="submit" class="secondary">End innings</button>
+    </form>
+  </div>
+  {% endif %}
+</section>

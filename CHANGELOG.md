@@ -30,6 +30,9 @@ and the project uses [Semantic Versioning](https://semver.org/).
   cricket_scorer` entry point.
 - Match list (scores, live/result status), new-match form (overs, players per side,
   optional bowler cap, date, venue) and toss page.
+- Live HTMX scoring page: pick striker/non-striker/bowler, buttons for 0/1/2/3/4/6,
+  wides, no-balls, byes, leg-byes, wicket/retirement form, undo and end-innings; shows
+  score, run rate, target, required rate, partnership, free hit and this-over summary.
 
 ### Removed
 - Local `.claude/settings.local.json` from version control.
