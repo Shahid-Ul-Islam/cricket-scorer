@@ -40,6 +40,7 @@ and the project uses [Semantic Versioning](https://semver.org/).
   economy), with a players leaderboard and innings-by-innings detail.
 - Exports: full match as JSON (`/matches/{id}/export.json`, schema version 1, every ball)
   and scorecard as Markdown (`/matches/{id}/scorecard.md`), linked from the scorecard.
+- Route tests for exports and an end-to-end match played through the web UI.
 
 ### Removed
 - Local `.claude/settings.local.json` from version control.
