@@ -38,6 +38,8 @@ and the project uses [Semantic Versioning](https://semver.org/).
 - Player stats from completed matches: career batting (innings, not outs, runs, highest,
   average, strike rate, 50s/100s) and bowling (overs, wickets, best figures, average,
   economy), with a players leaderboard and innings-by-innings detail.
+- Exports: full match as JSON (`/matches/{id}/export.json`, schema version 1, every ball)
+  and scorecard as Markdown (`/matches/{id}/scorecard.md`), linked from the scorecard.
 
 ### Removed
 - Local `.claude/settings.local.json` from version control.

@@ -6,10 +6,17 @@ import datetime as dt
 from typing import Annotated
 
 from fastapi import APIRouter, Form, Request
-from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from fastapi.responses import (
+    HTMLResponse,
+    JSONResponse,
+    PlainTextResponse,
+    RedirectResponse,
+    Response,
+)
 
 from cricket_scorer.models import MatchStatus, TossDecision
 from cricket_scorer.services import ServiceError, matches, teams
+from cricket_scorer.services.export import match_to_dict, scorecard_markdown
 from cricket_scorer.services.scorecard import build_scorecard
 from cricket_scorer.web.deps import SessionDep, templates
 
@@ -101,6 +108,25 @@ def match_detail(request: Request, session: SessionDep, match_id: int) -> Respon
 def scorecard(request: Request, session: SessionDep, match_id: int) -> Response:
     card = build_scorecard(matches.get_match(session, match_id))
     return templates.TemplateResponse(request, "scorecard.html", {"card": card})
+
+
+@router.get("/{match_id}/export.json")
+def export_json(session: SessionDep, match_id: int) -> JSONResponse:
+    data = match_to_dict(matches.get_match(session, match_id))
+    return JSONResponse(
+        data,
+        headers={"Content-Disposition": f'attachment; filename="match-{match_id}.json"'},
+    )
+
+
+@router.get("/{match_id}/scorecard.md")
+def export_markdown(session: SessionDep, match_id: int) -> PlainTextResponse:
+    text = scorecard_markdown(build_scorecard(matches.get_match(session, match_id)))
+    return PlainTextResponse(
+        text,
+        media_type="text/markdown; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="scorecard-{match_id}.md"'},
+    )
 
 
 @router.post("/{match_id}/toss")

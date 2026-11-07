@@ -4,6 +4,8 @@
 <p>
   <a href="/matches">← Matches</a>
   {% if card.status.value == "in_progress" %} · <a href="/matches/{{ card.match_id }}/score">Live scoring</a>{% endif %}
+  · Export: <a href="/matches/{{ card.match_id }}/export.json">JSON</a>
+  · <a href="/matches/{{ card.match_id }}/scorecard.md">Markdown</a>
 </p>
 <h1>{{ card.title }}</h1>
 <p class="muted">
