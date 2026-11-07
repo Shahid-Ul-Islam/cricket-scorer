@@ -16,6 +16,9 @@ and the project uses [Semantic Versioning](https://semver.org/).
   required rate, partnership, this-over summary, innings end on overs or target.
 - Extras handling (wide/no-ball penalty, runs off no-balls to the batter, byes and
   leg-byes not charged to the bowler) and free hit after a no-ball, carried over wides.
+- Dismissals: bowled, caught, lbw, run out (either batter, with runs completed), stumped,
+  hit wicket, retired hurt (may resume) and retired out; rules for which dismissals are
+  possible off each extra and on a free hit; fall of wickets; all-out ends the innings.
 
 ### Removed
 - Local `.claude/settings.local.json` from version control.

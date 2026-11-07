@@ -22,6 +22,21 @@ from cricket_scorer.engine.types import (
 
 MAX_RUNS_PER_BALL = 7  # e.g. three run plus four overthrows
 
+_ALL_ON_FIELD = frozenset(d for d in DismissalType if not d.is_retirement)
+DISMISSALS_ALLOWED_ON: dict[ExtraType | None, frozenset[DismissalType]] = {
+    None: _ALL_ON_FIELD,
+    ExtraType.WIDE: frozenset(
+        {DismissalType.STUMPED, DismissalType.RUN_OUT, DismissalType.HIT_WICKET}
+    ),
+    ExtraType.NO_BALL: frozenset({DismissalType.RUN_OUT}),
+    ExtraType.BYE: frozenset({DismissalType.RUN_OUT}),
+    ExtraType.LEG_BYE: frozenset({DismissalType.RUN_OUT}),
+}
+FREE_HIT_DISMISSALS = frozenset({DismissalType.RUN_OUT})
+NO_FIELDER_DISMISSALS = frozenset(
+    {DismissalType.BOWLED, DismissalType.LBW, DismissalType.HIT_WICKET}
+)
+
 
 @dataclass(slots=True)
 class BatterStats:
@@ -243,7 +258,9 @@ class Innings:
             raise IllegalEventError("innings is complete")
         self._validate_runs(e)
         self._validate_batters(e)
-        self._validate_bowler(e)
+        self._validate_dismissal(e)
+        if e.is_delivery:
+            self._validate_bowler(e)
 
     @staticmethod
     def _validate_runs(e: BallEvent) -> None:
@@ -268,7 +285,39 @@ class Innings:
             raise IllegalEventError("no batters left")
 
     def _can_come_in(self, player: int) -> bool:
-        return player not in self.batters
+        """New batters, and retired-hurt batters resuming their innings, may come in."""
+        stats = self.batters.get(player)
+        return stats is None or stats.dismissal is DismissalType.RETIRED_HURT
+
+    def _validate_dismissal(self, e: BallEvent) -> None:
+        d = e.dismissal
+        if d is None:
+            if e.dismissed is not None or e.fielder is not None:
+                raise IllegalEventError("dismissed player or fielder given without a dismissal")
+            return
+        if e.out_player not in (e.striker, e.non_striker):
+            raise IllegalEventError("the dismissed player must be one of the batters")
+        if e.fielder is not None and e.fielder in (e.striker, e.non_striker):
+            raise IllegalEventError("a batter cannot be the fielder")
+
+        if d.is_retirement:
+            if e.runs or e.extra is not None or e.fielder is not None:
+                raise IllegalEventError(
+                    "a retirement is not a delivery: no runs, extras or fielder"
+                )
+            return
+
+        if d is not DismissalType.RUN_OUT:
+            if e.out_player != e.striker:
+                raise IllegalEventError(f"only the striker can be out {d.value}")
+            if e.runs:
+                raise IllegalEventError(f"no runs can be completed on a {d.value} dismissal")
+        if e.fielder is not None and d in NO_FIELDER_DISMISSALS:
+            raise IllegalEventError(f"no fielder is involved in {d.value}")
+        if d not in DISMISSALS_ALLOWED_ON[e.extra]:
+            raise IllegalEventError(f"cannot be out {d.value} off a {e.extra.value}")
+        if self.free_hit and d not in FREE_HIT_DISMISSALS:
+            raise IllegalEventError(f"cannot be out {d.value} on a free hit")
 
     def _validate_bowler(self, e: BallEvent) -> None:
         if e.bowler in (e.striker, e.non_striker):
@@ -289,8 +338,17 @@ class Innings:
 
     def _apply(self, e: BallEvent) -> None:
         for player in (e.striker, e.non_striker):
-            self.batters.setdefault(player, BatterStats(player))
+            stats = self.batters.setdefault(player, BatterStats(player))
+            if stats.dismissal is DismissalType.RETIRED_HURT:
+                stats.dismissal = None  # resuming their innings
         self.striker, self.non_striker = e.striker, e.non_striker
+
+        if not e.is_delivery:
+            self._apply_dismissal(e)
+            self.applied.append(
+                AppliedEvent(e, self.current_over_index, self.runs, self.wickets, self.free_hit)
+            )
+            return
 
         over_index = self.current_over_index
         if not self.over_in_progress:
@@ -306,6 +364,8 @@ class Innings:
             if self._over_bowler_runs == 0:
                 self.bowlers[e.bowler].maidens += 1
             self._swap_strike()
+        if e.dismissal is not None:
+            self._apply_dismissal(e)
 
         self._update_free_hit(e)
         self.applied.append(AppliedEvent(e, over_index, self.runs, self.wickets, was_free_hit))
@@ -347,6 +407,30 @@ class Innings:
             self.partnership.balls += 1
             if e.bowler_runs == 0:
                 bowler.dots += 1
+
+    def _apply_dismissal(self, e: BallEvent) -> None:
+        """Record the dismissal and leave the batter's end empty.
+
+        Called after any strike change, so the vacancy is at the end the
+        dismissed batter finished at (e.g. a catch off the last ball of an
+        over leaves the new batter at the non-striker's end).
+        """
+        d, out = e.dismissal, e.out_player
+        assert d is not None and out is not None
+        batter = self.batters[out]
+        batter.dismissal = d
+        batter.bowler = e.bowler if d.credited_to_bowler else None
+        batter.fielder = e.fielder
+        if d.counts_as_wicket:
+            self.wickets += 1
+            self.fall_of_wickets.append(FallOfWicket(self.wickets, self.runs, self.overs, out))
+        if d.credited_to_bowler:
+            self.bowlers[e.bowler].wickets += 1
+        if self.striker == out:
+            self.striker = None
+        else:
+            self.non_striker = None
+        self.partnership = _Partnership()
 
     def _swap_strike(self) -> None:
         self.striker, self.non_striker = self.non_striker, self.striker
